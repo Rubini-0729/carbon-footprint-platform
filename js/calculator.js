@@ -68,9 +68,6 @@ class CarbonCalculator {
       // Consumption inputs
       dietType: 'medium-meat',    // heavy-meat, medium-meat, low-meat, vegetarian, vegan
       recyclingLevel: 'partial',  // none, partial, full
-
-      // Completed gamified actions
-      completedActions: [],
       
       // Calculated outputs (tonnes CO2e per year)
       emissions: {
@@ -118,7 +115,6 @@ class CarbonCalculator {
 
   /**
    * Calculates annual emissions in tonnes of CO2e per year.
-   * Subtracts any dynamic carbon reduction challenges selected by the user.
    * @return {Object} Calculated emission categories and grand total.
    */
   calculate() {
@@ -130,6 +126,8 @@ class CarbonCalculator {
     const electricityEmissions = annualElectricity * EMISSION_FACTORS.electricity * (1 - cleanEnergyFraction);
     const gasEmissions = (this.state.gasKwh * 12) * EMISSION_FACTORS.naturalGas;
     
+    this.state.emissions.housing = parseFloat((electricityEmissions + gasEmissions).toFixed(2));
+
     // 2. Transportation Calculations (annual/weekly inputs -> annual emissions)
     let carFactor = EMISSION_FACTORS.carPetrol;
     switch (this.state.carFuelType) {
@@ -144,37 +142,15 @@ class CarbonCalculator {
     const transitEmissions = (this.state.publicTransitKm * 52) * EMISSION_FACTORS.publicTransit;
     const flightEmissions = this.state.flightHours * EMISSION_FACTORS.flightHour;
     
+    this.state.emissions.transport = parseFloat((carEmissions + transitEmissions + flightEmissions).toFixed(2));
+
     // 3. Consumption & Waste Calculations (pre-computed annual values)
     const dietEmissions = EMISSION_FACTORS.diet[this.state.dietType] || 1.7;
     const wasteEmissions = EMISSION_FACTORS.waste[this.state.recyclingLevel] || 0.3;
     
-    // 4. Calculate dynamic reductions from gamified tracker challenges
-    const completed = this.state.completedActions || [];
-    let housingReduction = 0;
-    let transportReduction = 0;
-    let consumptionReduction = 0;
-    
-    if (completed.includes('diet-meatless')) {
-      consumptionReduction += 0.15;
-    }
-    if (completed.includes('housing-led')) {
-      housingReduction += 0.20;
-    }
-    if (completed.includes('housing-thermostat')) {
-      housingReduction += 0.30;
-    }
-    if (completed.includes('transport-carpool')) {
-      transportReduction += 0.40;
-    }
-    if (completed.includes('consumption-recycling')) {
-      consumptionReduction += 0.20;
-    }
+    this.state.emissions.consumption = parseFloat((dietEmissions + wasteEmissions).toFixed(2));
 
-    this.state.emissions.housing = parseFloat(Math.max(0, electricityEmissions + gasEmissions - housingReduction).toFixed(2));
-    this.state.emissions.transport = parseFloat(Math.max(0, carEmissions + transitEmissions + flightEmissions - transportReduction).toFixed(2));
-    this.state.emissions.consumption = parseFloat(Math.max(0, dietEmissions + wasteEmissions - consumptionReduction).toFixed(2));
-
-    // 5. Grand Total
+    // 4. Grand Total
     const totalEmissions = this.state.emissions.housing + this.state.emissions.transport + this.state.emissions.consumption;
     this.state.emissions.total = parseFloat(totalEmissions.toFixed(2));
     

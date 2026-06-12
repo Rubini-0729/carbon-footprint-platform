@@ -197,9 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
       appState.completedActions.push(actionId);
     }
     
-    // Sync checklist actions to the calculator engine
-    calculator.update('completedActions', appState.completedActions);
-    
     saveUserData();
     evaluateGoalsAndBadges();
     dashboard.render();
@@ -278,9 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Restore action state
         if (userData.completedActions) {
           appState.completedActions = userData.completedActions;
-          
-          // Sync checklist actions to the calculator engine
-          calculator.update('completedActions', appState.completedActions);
           
           // Apply 'completed' class in UI
           actionItems.forEach(item => {
