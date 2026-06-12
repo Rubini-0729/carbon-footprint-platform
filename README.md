@@ -2,7 +2,7 @@
 
 EcoTrace is a premium, high-fidelity, and zero-dependency web application designed to help individuals understand, track, simulate, and reduce their carbon footprint. Utilizing a modern dark glassmorphic design and real-world environmental calculations, it provides immediate awareness and actionable paths to net-zero living.
 
-🔗 **GitHub Repository**: [https://github.com/Rubini-0729/carbon-footprint-platform](https://github.com/Rubini-0729/carbon-footprint-platform)
+🔗 **Live Application URL**: [https://carbon-footprint-platform-497554254786.us-central1.run.app](https://carbon-footprint-platform-497554254786.us-central1.run.app)
 
 ## 📊 System Architecture & Data Flow
 
