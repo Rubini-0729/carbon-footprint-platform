@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self'; img-src 'self' data:; connect-src 'self';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EcoTrace - Personal Carbon Footprint Tracker & Advisor</title>
   <meta name="description" content="Understand, track, and reduce your carbon footprint with EcoTrace. Interactive calculator, personalized sandbox simulator, and smart AI eco-advisor.">
@@ -23,23 +24,23 @@
       </div>
       
       <nav>
-        <a href="#" class="nav-item active" data-view="dashboard">
+        <a href="#" class="nav-item active" data-view="dashboard" aria-label="Dashboard">
           <i class="fa-solid fa-chart-line"></i>
           <span>Dashboard</span>
         </a>
-        <a href="#" class="nav-item" data-view="calculator">
+        <a href="#" class="nav-item" data-view="calculator" aria-label="Carbon Calculator">
           <i class="fa-solid fa-calculator"></i>
           <span>Carbon Calculator</span>
         </a>
-        <a href="#" class="nav-item" data-view="simulation">
+        <a href="#" class="nav-item" data-view="simulation" aria-label="What-If Sandbox">
           <i class="fa-solid fa-sliders"></i>
           <span>What-If Sandbox</span>
         </a>
-        <a href="#" class="nav-item" data-view="advisor">
+        <a href="#" class="nav-item" data-view="advisor" aria-label="AI Eco-Advisor">
           <i class="fa-solid fa-robot"></i>
           <span>AI Eco-Advisor</span>
         </a>
-        <a href="#" class="nav-item" data-view="tracker">
+        <a href="#" class="nav-item" data-view="tracker" aria-label="Action Tracker">
           <i class="fa-solid fa-list-check"></i>
           <span>Action Tracker</span>
         </a>
@@ -194,16 +195,16 @@
           <div class="wizard-container">
             
             <!-- Steps Progress indicator -->
-            <div class="wizard-steps">
-              <div class="step-indicator active" data-step="1">
+            <div class="wizard-steps" role="navigation" aria-label="Calculator Steps">
+              <div class="step-indicator active" data-step="1" tabindex="0" aria-label="Step 1: Housing, current step">
                 <div class="step-dot">1</div>
                 <div class="step-lbl">Housing</div>
               </div>
-              <div class="step-indicator" data-step="2">
+              <div class="step-indicator" data-step="2" tabindex="0" aria-label="Step 2: Transportation">
                 <div class="step-dot">2</div>
                 <div class="step-lbl">Transportation</div>
               </div>
-              <div class="step-indicator" data-step="3">
+              <div class="step-indicator" data-step="3" tabindex="0" aria-label="Step 3: Habits & Diet">
                 <div class="step-dot">3</div>
                 <div class="step-lbl">Habits & Diet</div>
               </div>
@@ -361,7 +362,7 @@
               
               <div class="slider-group">
                 <div class="slider-header">
-                  <span class="slider-title">Clean Electricity Share</span>
+                  <label class="slider-title" for="sim-clean-energy">Clean Electricity Share</label>
                   <span class="slider-val" id="sim-clean-energy-val">0%</span>
                 </div>
                 <input type="range" class="range-slider" id="sim-clean-energy" min="0" max="100" value="0">
@@ -370,7 +371,7 @@
 
               <div class="slider-group">
                 <div class="slider-header">
-                  <span class="slider-title">Transit Mileage Shift</span>
+                  <label class="slider-title" for="sim-transit-share">Transit Mileage Shift</label>
                   <span class="slider-val" id="sim-transit-share-val">0%</span>
                 </div>
                 <input type="range" class="range-slider" id="sim-transit-share" min="0" max="100" value="0">
@@ -379,7 +380,7 @@
 
               <div class="slider-group">
                 <div class="slider-header">
-                  <span class="slider-title">Meatless Days Per Week</span>
+                  <label class="slider-title" for="sim-meatless-days">Meatless Days Per Week</label>
                   <span class="slider-val" id="sim-meatless-days-val">0 days</span>
                 </div>
                 <input type="range" class="range-slider" id="sim-meatless-days" min="0" max="7" value="0">
@@ -388,7 +389,7 @@
 
               <div class="slider-group">
                 <div class="slider-header">
-                  <span class="slider-title">Home Energy Efficiency</span>
+                  <label class="slider-title" for="sim-home-efficiency">Home Energy Efficiency</label>
                   <span class="slider-val" id="sim-home-efficiency-val">0%</span>
                 </div>
                 <input type="range" class="range-slider" id="sim-home-efficiency" min="0" max="50" value="0">
@@ -472,8 +473,8 @@
               <!-- Chat Input Field -->
               <div class="chat-input-area">
                 <form class="chat-form" id="chat-form">
-                  <input type="text" class="chat-input" id="chat-input" placeholder="Ask a question about carbon reduction..." autocomplete="off">
-                  <button type="submit" class="chat-submit-btn">
+                  <input type="text" class="chat-input" id="chat-input" placeholder="Ask a question about carbon reduction..." autocomplete="off" aria-label="Eco Advisor Chat Input">
+                  <button type="submit" class="chat-submit-btn" aria-label="Send Message">
                     <i class="fa-solid fa-paper-plane"></i>
                   </button>
                 </form>
@@ -505,9 +506,9 @@
                 Commit to these simple daily habits and earn points towards sustainable achievement badges.
               </p>
 
-              <div class="action-list">
+              <div class="action-list" role="group" aria-label="Eco Challenges">
                 
-                <div class="action-item" data-action-id="diet-meatless">
+                <div class="action-item" data-action-id="diet-meatless" role="checkbox" aria-checked="false" tabindex="0" aria-label="Meatless Mondays, challenge saves 0.15 tonnes of CO2 equivalent per year. Replace all meat and dairy meals with plant-based alternatives every Monday.">
                   <div class="action-checkbox">
                     <i class="fa-solid fa-check"></i>
                   </div>
@@ -518,7 +519,7 @@
                   <div class="action-saving-tag">-0.15 t CO₂e / yr</div>
                 </div>
 
-                <div class="action-item" data-action-id="housing-led">
+                <div class="action-item" data-action-id="housing-led" role="checkbox" aria-checked="false" tabindex="0" aria-label="Upgrade to LED Lighting, challenge saves 0.20 tonnes of CO2 equivalent per year. Replace ten high-use incandescent bulbs at home with energy-efficient LED alternatives.">
                   <div class="action-checkbox">
                     <i class="fa-solid fa-check"></i>
                   </div>
@@ -529,7 +530,7 @@
                   <div class="action-saving-tag">-0.20 t CO₂e / yr</div>
                 </div>
 
-                <div class="action-item" data-action-id="housing-thermostat">
+                <div class="action-item" data-action-id="housing-thermostat" role="checkbox" aria-checked="false" tabindex="0" aria-label="Smart Thermostat Rule, challenge saves 0.30 tonnes of CO2 equivalent per year. Turn down thermostat heating by 1°C in winter, or turn up AC cooling by 1°C in summer.">
                   <div class="action-checkbox">
                     <i class="fa-solid fa-check"></i>
                   </div>
@@ -540,7 +541,7 @@
                   <div class="action-saving-tag">-0.30 t CO₂e / yr</div>
                 </div>
 
-                <div class="action-item" data-action-id="transport-carpool">
+                <div class="action-item" data-action-id="transport-carpool" role="checkbox" aria-checked="false" tabindex="0" aria-label="Weekly Carpool or Transit Commute, challenge saves 0.40 tonnes of CO2 equivalent per year. Commit to carpooling, taking public transit, or cycling to work/school at least one day a week.">
                   <div class="action-checkbox">
                     <i class="fa-solid fa-check"></i>
                   </div>
@@ -551,7 +552,7 @@
                   <div class="action-saving-tag">-0.40 t CO₂e / yr</div>
                 </div>
 
-                <div class="action-item" data-action-id="consumption-recycling">
+                <div class="action-item" data-action-id="consumption-recycling" role="checkbox" aria-checked="false" tabindex="0" aria-label="Compost and Strict Recycle, challenge saves 0.20 tonnes of CO2 equivalent per year. Divert all food waste away from the trash bin into composting and sort plastics/cans.">
                   <div class="action-checkbox">
                     <i class="fa-solid fa-check"></i>
                   </div>

@@ -78,10 +78,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const stepNum = index + 1;
       indicator.classList.remove('active', 'completed');
       
+      const stepLbl = indicator.querySelector('.step-lbl') ? indicator.querySelector('.step-lbl').textContent : '';
       if (stepNum === currentStep) {
         indicator.classList.add('active');
+        indicator.setAttribute('aria-label', `Step ${stepNum}: ${stepLbl}, current step`);
       } else if (stepNum < currentStep) {
         indicator.classList.add('completed');
+        indicator.setAttribute('aria-label', `Step ${stepNum}: ${stepLbl}, completed`);
+      } else {
+        indicator.setAttribute('aria-label', `Step ${stepNum}: ${stepLbl}`);
       }
     });
 
@@ -125,9 +130,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Direct step indicator click navigation
   stepIndicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', () => {
+    const selectStep = () => {
       currentStep = index + 1;
       updateWizardUI();
+    };
+    indicator.addEventListener('click', selectStep);
+    indicator.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        selectStep();
+      }
     });
   });
 
@@ -161,27 +173,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 6. Action Tracker Goal checklist & Gamification Badges
   const actionItems = document.querySelectorAll('.action-item');
-  actionItems.forEach(item => {
-    const checkbox = item.querySelector('.action-checkbox');
+  
+  function toggleActionItem(item) {
     const actionId = item.getAttribute('data-action-id');
-
-    if (checkbox) {
-      checkbox.addEventListener('click', () => {
-        const isCompleted = item.classList.contains('completed');
-        
-        if (isCompleted) {
-          item.classList.remove('completed');
-          appState.completedActions = appState.completedActions.filter(id => id !== actionId);
-        } else {
-          item.classList.add('completed');
-          appState.completedActions.push(actionId);
-        }
-        
-        saveUserData();
-        evaluateGoalsAndBadges();
-        dashboard.render();
-      });
+    const isCompleted = item.classList.contains('completed');
+    
+    if (isCompleted) {
+      item.classList.remove('completed');
+      item.setAttribute('aria-checked', 'false');
+      appState.completedActions = appState.completedActions.filter(id => id !== actionId);
+    } else {
+      item.classList.add('completed');
+      item.setAttribute('aria-checked', 'true');
+      appState.completedActions.push(actionId);
     }
+    
+    saveUserData();
+    evaluateGoalsAndBadges();
+    dashboard.render();
+  }
+
+  actionItems.forEach(item => {
+    item.addEventListener('click', () => {
+      toggleActionItem(item);
+    });
+
+    item.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        toggleActionItem(item);
+      }
+    });
   });
 
   // Evaluate badges earned
@@ -249,8 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const actionId = item.getAttribute('data-action-id');
             if (appState.completedActions.includes(actionId)) {
               item.classList.add('completed');
+              item.setAttribute('aria-checked', 'true');
             } else {
               item.classList.remove('completed');
+              item.setAttribute('aria-checked', 'false');
             }
           });
         }

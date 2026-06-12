@@ -38,5 +38,60 @@ console.assert(Math.abs(baseEmissions.consumption - 2.00) < 0.02, `Consumption e
 // Total = 1.72 + 3.16 + 2.00 = 6.88 t
 console.assert(Math.abs(baseEmissions.total - 6.88) < 0.02, `Total emissions should be ~6.88, got ${baseEmissions.total}`);
 
-console.log('✅ All calculator tests passed successfully!');
+// Verify AI Eco-Advisor Responses & HTML Escaping Security
+console.log('Running AI Eco-Advisor tests...');
+const CarbonAdvisor = require('./assistant.js');
+const advisor = new CarbonAdvisor(calc);
+
+// 1. Test HTML Escaping
+const xssPayload = '<script>alert("XSS")</script>';
+const escaped = advisor.escapeHTML(xssPayload);
+console.assert(escaped === '&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;', 'XSS payload must be escaped safely');
+console.assert(advisor.escapeHTML('&') === '&amp;', 'Ampersand must be escaped');
+console.assert(advisor.escapeHTML('"') === '&quot;', 'Double quotes must be escaped');
+console.assert(advisor.escapeHTML('\'') === '&#39;', 'Single quote must be escaped');
+
+// 2. Test Response Generation Keywords
+const responseSolar = advisor.generateResponse('tell me about solar power');
+console.assert(responseSolar.includes('Solar Power Insight'), 'Advisor response for solar power should trigger Solar Insight');
+
+const responseEV = advisor.generateResponse('what about electric vehicles?');
+console.assert(responseEV.includes('Electric Vehicle (EV) Insight'), 'Advisor response for EV should trigger EV Insight');
+
+const responseAverage = advisor.generateResponse('what is the average carbon footprint?');
+console.assert(responseAverage.includes('Global & Regional Benchmarks'), 'Advisor response for average should trigger Benchmarks');
+
+// Verify Sandbox Simulation Math
+console.log('Running Sandbox Simulation math tests...');
+const elements = {};
+const dummyElement = { textContent: '' };
+global.document = {
+  getElementById: (id) => {
+    if (id === 'sim-clean-energy') return { value: '50' };
+    if (id === 'sim-transit-share') return { value: '20' };
+    if (id === 'sim-meatless-days') return { value: '3' };
+    if (id === 'sim-home-efficiency') return { value: '10' };
+    
+    if (!elements[id]) {
+      elements[id] = { textContent: '' };
+    }
+    return elements[id];
+  }
+};
+
+const CarbonSimulation = require('./simulation.js');
+const sim = new CarbonSimulation(calc);
+sim.update();
+
+// Expected math based on:
+// sim-clean-energy = 50%, sim-transit-share = 20%, sim-meatless-days = 3 days, sim-home-efficiency = 10%
+// simulatedHousing = 0.92 tonnes CO2e
+// simulatedTransport = 2.83 tonnes CO2e
+// simulatedConsumption = 1.66 tonnes CO2e
+// simulatedTotal = 0.92 + 2.83 + 1.66 = 5.41 tonnes CO2e (reduction: 6.88 - 5.41 = 1.47 tonnes)
+console.assert(elements['sim-simulated-val'].textContent === '5.41 t', `Expected simulated profile to be '5.41 t', got '${elements['sim-simulated-val'].textContent}'`);
+console.assert(elements['sim-reduction-val'].textContent === '1.47 t', `Expected avoided carbon to be '1.47 t', got '${elements['sim-reduction-val'].textContent}'`);
+console.assert(elements['sim-reduction-pct-val'].textContent === '(21% reduction)', `Expected percentage to be '(21% reduction)', got '${elements['sim-reduction-pct-val'].textContent}'`);
+
+console.log('✅ All unit and integration tests passed successfully!');
 process.exit(0);

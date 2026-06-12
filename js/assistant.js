@@ -104,13 +104,26 @@ class CarbonAdvisor {
     }
   }
 
+  escapeHTML(str) {
+    if (typeof str !== 'string') return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   appendMessage(sender, text) {
     const chatMessages = document.getElementById('chat-messages');
     if (!chatMessages) return;
 
     const bubble = document.createElement('div');
     bubble.className = `message-bubble ${sender}`;
-    bubble.innerHTML = text.replace(/\n/g, '<br>');
+    
+    // Sanitize message content first, then translate newlines to HTML breaks
+    const escapedText = this.escapeHTML(text);
+    bubble.innerHTML = escapedText.replace(/\n/g, '<br>');
     
     chatMessages.appendChild(bubble);
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -125,7 +138,7 @@ class CarbonAdvisor {
     const emissions = state.emissions;
 
     // A. Housing-related queries
-    if (q.includes('housing') || q.includes('electricity') || q.includes('gas') || q.includes('home') || q.includes('solar') || q.includes('heating')) {
+    if (q.includes('housing') || q.includes('electricity') || /\bgas\b/.test(q) || q.includes('home') || q.includes('solar') || q.includes('heating')) {
       const annualElecVal = state.electricityKwh * 12;
       const cleanShare = state.cleanEnergyShare;
       
@@ -146,7 +159,7 @@ class CarbonAdvisor {
     }
 
     // B. Transportation-related queries
-    if (q.includes('travel') || q.includes('car') || q.includes('drive') || q.includes('transit') || q.includes('commute') || q.includes('flight') || q.includes('electric vehicle') || q.includes('ev')) {
+    if (q.includes('travel') || /\bcar(s)?\b/.test(q) || q.includes('drive') || q.includes('transit') || q.includes('commute') || q.includes('flight') || q.includes('electric vehicle') || /\bev(s)?\b/.test(q)) {
       let reply = `### Transportation Carbon Analysis 🚗\n`;
       reply += `Your transportation footprint is **${emissions.transport.toFixed(2)} tonnes CO₂e/year** (Driving: ${state.carMileage} km/yr, Public Transit: ${state.publicTransitKm} km/wk, Flights: ${state.flightHours} hrs/yr).\n\n`;
 
@@ -176,7 +189,7 @@ class CarbonAdvisor {
     }
 
     // C. Diet and Food-related queries
-    if (q.includes('diet') || q.includes('food') || q.includes('meat') || q.includes('vegan') || q.includes('vegetarian') || q.includes('eat')) {
+    if (q.includes('diet') || q.includes('food') || q.includes('meat') || q.includes('vegan') || q.includes('vegetarian') || /\beat(s)?\b/.test(q)) {
       const dietEmissions = this.dietFactors[state.dietType] || 1.7;
       let reply = `### Diet & Food Carbon Analysis 🍽️\n`;
       reply += `Your current food diet contributes approximately **${dietEmissions.toFixed(1)} tonnes CO₂e/year** (Diet style: ${state.dietType.replace('-', ' ')}).\n\n`;

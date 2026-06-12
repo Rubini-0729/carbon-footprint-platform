@@ -21,7 +21,7 @@
   --success: #10b981;
   
   --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --text-muted: #cbd5e1;
   --text-inverse: #0f172a;
   
   --font-title: 'Outfit', sans-serif;
@@ -1301,4 +1301,34 @@ input[type="number"] {
     grid-template-columns: 1fr;
     gap: 16px;
   }
+}
+
+/* Accessibility Focus States & Custom Checkbox Outline */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+.action-checkbox:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.action-item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.step-indicator:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+.nav-item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.range-slider:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 6px;
 }
