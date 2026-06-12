@@ -1,4 +1,9 @@
-// Main Application Controller
+'use strict';
+
+/**
+ * @fileoverview Main Application Controller
+ * Orchestrates event binds, form mapping, and storage persistence.
+ */
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize core modules
@@ -33,9 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const targetView = item.getAttribute('data-view');
       
-      // Update active nav item
-      navItems.forEach(nav => nav.classList.remove('active'));
+      // Update active nav item and ARIA selected states
+      navItems.forEach(nav => {
+        nav.classList.remove('active');
+        nav.setAttribute('aria-selected', 'false');
+      });
       item.classList.add('active');
+      item.setAttribute('aria-selected', 'true');
 
       // Update active section
       sections.forEach(section => {
@@ -188,6 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
       appState.completedActions.push(actionId);
     }
     
+    // Sync checklist actions to the calculator engine
+    calculator.update('completedActions', appState.completedActions);
+    
     saveUserData();
     evaluateGoalsAndBadges();
     dashboard.render();
@@ -266,6 +278,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Restore action state
         if (userData.completedActions) {
           appState.completedActions = userData.completedActions;
+          
+          // Sync checklist actions to the calculator engine
+          calculator.update('completedActions', appState.completedActions);
+          
           // Apply 'completed' class in UI
           actionItems.forEach(item => {
             const actionId = item.getAttribute('data-action-id');

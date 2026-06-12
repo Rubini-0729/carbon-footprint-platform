@@ -64,16 +64,29 @@ console.assert(responseAverage.includes('Global & Regional Benchmarks'), 'Adviso
 // Verify Sandbox Simulation Math
 console.log('Running Sandbox Simulation math tests...');
 const elements = {};
-const dummyElement = { textContent: '' };
+const createMockElement = (val = '') => {
+  return {
+    value: val,
+    textContent: val,
+    setAttribute: function(attr, value) {
+      this[attr] = value;
+    }
+  };
+};
+
+const sliders = {
+  'sim-clean-energy': createMockElement('50'),
+  'sim-transit-share': createMockElement('20'),
+  'sim-meatless-days': createMockElement('3'),
+  'sim-home-efficiency': createMockElement('10')
+};
+
 global.document = {
   getElementById: (id) => {
-    if (id === 'sim-clean-energy') return { value: '50' };
-    if (id === 'sim-transit-share') return { value: '20' };
-    if (id === 'sim-meatless-days') return { value: '3' };
-    if (id === 'sim-home-efficiency') return { value: '10' };
+    if (sliders[id]) return sliders[id];
     
     if (!elements[id]) {
-      elements[id] = { textContent: '' };
+      elements[id] = createMockElement();
     }
     return elements[id];
   }
@@ -92,6 +105,41 @@ sim.update();
 console.assert(elements['sim-simulated-val'].textContent === '5.41 t', `Expected simulated profile to be '5.41 t', got '${elements['sim-simulated-val'].textContent}'`);
 console.assert(elements['sim-reduction-val'].textContent === '1.47 t', `Expected avoided carbon to be '1.47 t', got '${elements['sim-reduction-val'].textContent}'`);
 console.assert(elements['sim-reduction-pct-val'].textContent === '(21% reduction)', `Expected percentage to be '(21% reduction)', got '${elements['sim-reduction-pct-val'].textContent}'`);
+
+// 3. Test extra calculator variables and checklist savings
+console.log('Running checklist action subtraction tests...');
+calc.update('completedActions', ['diet-meatless', 'housing-led']);
+calc.calculate();
+const emissionsWithActions = calc.getState().emissions;
+// Base housing was 1.72. Subtracting housing-led (0.20) should make it 1.52.
+console.assert(Math.abs(emissionsWithActions.housing - 1.52) < 0.02, `Housing with led action should be ~1.52, got ${emissionsWithActions.housing}`);
+// Base consumption was 2.00. Subtracting diet-meatless (0.15) should make it 1.85.
+console.assert(Math.abs(emissionsWithActions.consumption - 1.85) < 0.02, `Consumption with meatless action should be ~1.85, got ${emissionsWithActions.consumption}`);
+
+// Test boundary inputs
+console.log('Running boundary inputs tests...');
+calc.updateMultiple({
+  electricityKwh: 0,
+  gasKwh: 0,
+  cleanEnergyShare: 100,
+  carMileage: 0,
+  publicTransitKm: 0,
+  flightHours: 0,
+  dietType: 'vegan',
+  recyclingLevel: 'full',
+  completedActions: []
+});
+calc.calculate();
+const zeroEmissions = calc.getState().emissions;
+// Vegan (0.6) + full recycling (0.1) = 0.7 tonnes total
+console.assert(zeroEmissions.housing === 0, 'Housing emissions should be 0 when energy usage is 0');
+console.assert(zeroEmissions.transport === 0, 'Transport emissions should be 0 when travel mileage is 0');
+console.assert(Math.abs(zeroEmissions.consumption - 0.70) < 0.02, `Vegan diet + full recycling should be ~0.70, got ${zeroEmissions.consumption}`);
+console.assert(Math.abs(zeroEmissions.total - 0.70) < 0.02, `Total emissions should be ~0.70, got ${zeroEmissions.total}`);
+
+// Reset calculator state for safety
+calc.updateMultiple(calc.getInitialState());
+calc.calculate();
 
 console.log('✅ All unit and integration tests passed successfully!');
 process.exit(0);

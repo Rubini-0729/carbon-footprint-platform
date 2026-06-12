@@ -1,18 +1,34 @@
-// Dashboard View Controller
+'use strict';
 
+/**
+ * @fileoverview Dashboard View Controller
+ * Renders gauges, dynamic bar charts, and carbon offset benchmarks.
+ */
+
+/**
+ * Class representing the carbon dashboard rendering controller.
+ */
 class CarbonDashboard {
+  /**
+   * Creates an instance of CarbonDashboard.
+   * @param {CarbonCalculator} calculator - The carbon footprint calculator engine.
+   */
   constructor(calculator) {
     this.calculator = calculator;
     this.maxGaugeValue = 20; // 20 tonnes is our gauge maximum (corresponds to 100%)
     this.maxBarValue = 10;   // 10 tonnes is the maximum height for individual category bars
   }
 
-  // Initialize and run first render
+  /**
+   * Initializes the dashboard views and triggers first render.
+   */
   init() {
     this.render();
   }
 
-  // Update numbers, gauge, and charts on the page
+  /**
+   * Updates numbers, progress gauges, and relative bar charts on the page.
+   */
   render() {
     const state = this.calculator.getState();
     const emissions = state.emissions;
@@ -54,7 +70,12 @@ class CarbonDashboard {
     this.updateComparisons(emissions.total);
   }
 
-  // Helper to update a chart bar's height and tooltip
+  /**
+   * Updates a single chart bar's height percentage and hover tooltip text.
+   * @param {string} category - Category name (e.g. 'housing', 'transport').
+   * @param {number} value - Emissions value in tonnes.
+   * @param {number} [maxVal=this.maxBarValue] - Maximum value representing 100% height.
+   */
   updateBar(category, value, maxVal = this.maxBarValue) {
     const bar = document.getElementById(`bar-${category}`);
     const tooltip = document.getElementById(`tooltip-${category}`);
@@ -66,7 +87,10 @@ class CarbonDashboard {
     }
   }
 
-  // Update trend text and comparisons with regional benchmarks
+  /**
+   * Updates comparative benchmarking text based on regional averages.
+   * @param {number} userTotal - User's total annual emissions in tonnes.
+   */
   updateComparisons(userTotal) {
     const usAvg = 16.0;
     const worldAvg = 4.7;
@@ -106,7 +130,12 @@ class CarbonDashboard {
     this.updateTrendBadge('consumption-trend', this.calculator.getState().emissions.consumption, 2.2);
   }
 
-  // Update a sub-trend description
+  /**
+   * Updates visual trend tags indicating relative progress against national norms.
+   * @param {string} elementId - Target DOM element ID.
+   * @param {number} currentValue - User's current category emissions.
+   * @param {number} benchmarkValue - Category benchmark emissions.
+   */
   updateTrendBadge(elementId, currentValue, benchmarkValue) {
     const badge = document.getElementById(elementId);
     if (!badge) return;
@@ -114,15 +143,20 @@ class CarbonDashboard {
     if (currentValue < benchmarkValue) {
       const pct = (((benchmarkValue - currentValue) / benchmarkValue) * 100).toFixed(0);
       badge.className = 'metric-trend good';
-      badge.innerHTML = `<i class="fas fa-caret-down"></i> ${pct}% below avg`;
+      badge.innerHTML = `<i class="fas fa-caret-down" aria-hidden="true"></i> ${pct}% below avg`;
     } else {
       const pct = (((currentValue - benchmarkValue) / benchmarkValue) * 100).toFixed(0);
       badge.className = 'metric-trend bad';
-      badge.innerHTML = `<i class="fas fa-caret-up"></i> ${pct}% above avg`;
+      badge.innerHTML = `<i class="fas fa-caret-up" aria-hidden="true"></i> ${pct}% above avg`;
     }
   }
 
-  // Clean number count-up animation
+  /**
+   * Animates dashboard counts from their current values to new updated values.
+   * @param {string} elementId - Target DOM element ID.
+   * @param {number} targetVal - Target numeric endpoint.
+   * @param {number} [decimals=2] - Number of decimal places.
+   */
   animateNumber(elementId, targetVal, decimals = 2) {
     const el = document.getElementById(elementId);
     if (!el) return;

@@ -1,6 +1,18 @@
-// Sandbox Simulation Controller
+'use strict';
 
+/**
+ * @fileoverview Sandbox Simulation Controller
+ * Simulates carbon offset options and calculates utility and transport savings.
+ */
+
+/**
+ * Class representing the carbon sandbox simulation tool.
+ */
 class CarbonSimulation {
+  /**
+   * Creates an instance of CarbonSimulation.
+   * @param {CarbonCalculator} calculator - The carbon footprint calculator engine.
+   */
   constructor(calculator) {
     this.calculator = calculator;
     // Costs for utility savings estimates
@@ -12,11 +24,17 @@ class CarbonSimulation {
     };
   }
 
+  /**
+   * Initializes visual event listeners and triggers first simulation draw.
+   */
   init() {
     this.bindEvents();
     this.update();
   }
 
+  /**
+   * Binds user slide drag event listeners to trigger UI updates.
+   */
   bindEvents() {
     const sliders = [
       'sim-clean-energy',
@@ -42,15 +60,29 @@ class CarbonSimulation {
     });
   }
 
-  // Calculate and update simulation results
+  /**
+   * Calculates and updates simulation results.
+   * Updates display labels, outputs savings, and adjusts ARIA accessibility states.
+   */
   update() {
     const baseState = this.calculator.getState();
     
     // Read slider values
-    const simCleanEnergy = parseFloat(document.getElementById('sim-clean-energy')?.value || 0);
-    const simTransitShare = parseFloat(document.getElementById('sim-transit-share')?.value || 0);
-    const simMeatlessDays = parseFloat(document.getElementById('sim-meatless-days')?.value || 0);
-    const simHomeEfficiency = parseFloat(document.getElementById('sim-home-efficiency')?.value || 0);
+    const cleanSlider = document.getElementById('sim-clean-energy');
+    const transitSlider = document.getElementById('sim-transit-share');
+    const meatlessSlider = document.getElementById('sim-meatless-days');
+    const efficiencySlider = document.getElementById('sim-home-efficiency');
+
+    const simCleanEnergy = parseFloat(cleanSlider?.value || 0);
+    const simTransitShare = parseFloat(transitSlider?.value || 0);
+    const simMeatlessDays = parseFloat(meatlessSlider?.value || 0);
+    const simHomeEfficiency = parseFloat(efficiencySlider?.value || 0);
+
+    // Update ARIA values dynamically for screen readers
+    if (cleanSlider) cleanSlider.setAttribute('aria-valuenow', simCleanEnergy);
+    if (transitSlider) transitSlider.setAttribute('aria-valuenow', simTransitShare);
+    if (meatlessSlider) meatlessSlider.setAttribute('aria-valuenow', simMeatlessDays);
+    if (efficiencySlider) efficiencySlider.setAttribute('aria-valuenow', simHomeEfficiency);
 
     // 1. Calculate Simulated Housing
     // Home efficiency reduces energy consumption. Clean energy share reduces electricity footprint.

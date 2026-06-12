@@ -1,6 +1,18 @@
-// AI Eco-Advisor Controller
+'use strict';
 
+/**
+ * @fileoverview AI Eco-Advisor Controller
+ * Simulates responses and keyword parsing for smart sustainability guidance.
+ */
+
+/**
+ * Class representing the AI eco advisor bot.
+ */
 class CarbonAdvisor {
+  /**
+   * Creates an instance of CarbonAdvisor.
+   * @param {CarbonCalculator} calculator - The carbon footprint calculator engine.
+   */
   constructor(calculator) {
     this.calculator = calculator;
     this.chatHistory = [];
@@ -13,12 +25,18 @@ class CarbonAdvisor {
     };
   }
 
+  /**
+   * Initializes event bindings, suggestions list, and welcomes user.
+   */
   init() {
     this.bindEvents();
     this.addWelcomeMessage();
     this.renderSuggestions();
   }
 
+  /**
+   * Binds chat form submit events to trigger message handling.
+   */
   bindEvents() {
     const form = document.getElementById('chat-form');
     const input = document.getElementById('chat-input');
@@ -35,7 +53,9 @@ class CarbonAdvisor {
     }
   }
 
-  // Generate suggested quick-questions based on user's current highest carbon categories
+  /**
+   * Generates suggested sustainability questions dynamically based on highest emission categories.
+   */
   renderSuggestions() {
     const suggestionsBox = document.getElementById('advisor-suggestions');
     if (!suggestionsBox) return;
@@ -74,11 +94,18 @@ class CarbonAdvisor {
     });
   }
 
+  /**
+   * Appends welcome message to advisor chat history.
+   */
   addWelcomeMessage() {
     const welcome = "Hello! I am your AI Eco-Advisor. 🌍 I've analyzed your inputs and can help you create a personalized plan to reduce your carbon footprint. Ask me anything about your home energy, daily commute, diet, or waste recycling!";
     this.appendMessage('assistant', welcome);
   }
 
+  /**
+   * Handles incoming user chat queries and initiates advisor reply delay.
+   * @param {string} text - User query text.
+   */
   handleUserMessage(text) {
     this.appendMessage('user', text);
     
@@ -104,6 +131,11 @@ class CarbonAdvisor {
     }
   }
 
+  /**
+   * Safely escapes HTML special characters to prevent XSS injection.
+   * @param {string} str - Raw string to escape.
+   * @return {string} Escaped safe string.
+   */
   escapeHTML(str) {
     if (typeof str !== 'string') return '';
     return str
@@ -114,6 +146,11 @@ class CarbonAdvisor {
       .replace(/'/g, '&#39;');
   }
 
+  /**
+   * Appends a safe message bubble to the chat logs.
+   * @param {string} sender - Sender category ('user' or 'assistant').
+   * @param {string} text - Message text.
+   */
   appendMessage(sender, text) {
     const chatMessages = document.getElementById('chat-messages');
     if (!chatMessages) return;
