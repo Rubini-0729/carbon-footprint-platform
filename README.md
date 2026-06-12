@@ -4,6 +4,59 @@ EcoTrace is a premium, high-fidelity, and zero-dependency web application design
 
 🔗 **GitHub Repository**: [https://github.com/Rubini-0729/carbon-footprint-platform](https://github.com/Rubini-0729/carbon-footprint-platform)
 
+## 📊 System Architecture & Data Flow
+
+Below is the conceptual architecture and reactive data flow of the EcoTrace Platform:
+
+```mermaid
+flowchart TD
+    classDef ui fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#f8fafc;
+    classDef logic fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#f8fafc;
+    classDef storage fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#f8fafc;
+
+    subgraph UI ["User Interface (View Tier)"]
+        A[Dashboard & Charts]:::ui
+        B[Calculator Wizard]:::ui
+        C[What-If Sandbox]:::ui
+        D[AI Eco-Advisor Chat]:::ui
+        E[Action Tracker]:::ui
+    end
+
+    subgraph Logic ["Application Controllers (Logic Tier)"]
+        F[app.js Orchestrator]:::logic
+        G[calculator.js Engine]:::logic
+        H[dashboard.js Renderer]:::logic
+        I[simulation.js Sandbox]:::logic
+        J[assistant.js Chat Bot]:::logic
+    end
+
+    subgraph Storage ["State & Persistence"]
+        K[(LocalStorage)]:::storage
+        L[App State Node]:::logic
+    end
+
+    B -->|Form Inputs| F
+    F -->|Update State| L
+    L -->|Trigger Math| G
+    G -->|Annual Carbon tCO2e| L
+    L -->|Sync state| K
+    K -->|Restore State| F
+    
+    L -->|Dynamic Render| H
+    H -->|Update Gauge & Charts| A
+    
+    L -->|What-if baseline| I
+    C -->|Adjust Sliders| I
+    I -->|Calculate Savings & EPA Equiv| C
+    
+    L -->|Emissions context| J
+    D -->|User Query| J
+    J -->|Contextual Response & Prompts| D
+    
+    E -->|Select Challenges| F
+    F -->|Recalculate Totals & Badges| L
+```
+
 ---
 
 ## 🌍 1. Chosen Vertical: "Urban Household & Smart Commuter"
